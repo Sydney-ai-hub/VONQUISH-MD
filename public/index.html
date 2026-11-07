@@ -2,153 +2,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VONQUISH MD | Pairing</title>
-  <style>
-    * { box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VONQUISH MD | Dashboard</title>
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      background: radial-gradient(circle at top, #32105c, #090611 65%);
-      color: white;
-      font-family: Arial, sans-serif;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    .card {
-      width: 100%;
-      max-width: 420px;
-      padding: 32px 25px;
-      border: 1px solid #813bce;
-      border-radius: 22px;
-      background: #130e20;
-      box-shadow: 0 0 35px #7023a455;
-      text-align: center;
-    }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #090611;
+  color: white;
+  font-family: Arial, sans-serif;
+}
 
-    .logo {
-      color: #c58aff;
-      font-size: 34px;
-      font-weight: 900;
-      letter-spacing: 2px;
-    }
+header {
+  padding: 22px;
+  background: #160d25;
+  border-bottom: 1px solid #542783;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    p { color: #c8bdd6; line-height: 1.6; }
+.logo {
+  color: #c58aff;
+  font-size: 23px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
 
-    input {
-      width: 100%;
-      padding: 15px;
-      margin: 14px 0;
-      border: 1px solid #7541a0;
-      border-radius: 10px;
-      background: #090611;
-      color: white;
-      font-size: 16px;
-      outline: none;
-    }
+.status {
+  color: #b9ffcc;
+  font-size: 12px;
+}
 
-    button {
-      width: 100%;
-      padding: 15px;
-      border: 0;
-      border-radius: 10px;
-      background: linear-gradient(90deg, #7626bd, #b04cff);
-      color: white;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+main {
+  max-width: 950px;
+  margin: auto;
+  padding: 25px 18px 50px;
+}
 
-    button:disabled { opacity: .6; cursor: wait; }
+.welcome {
+  padding: 28px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #35105b, #170d28);
+  border: 1px solid #7137a3;
+  margin-bottom: 24px;
+}
 
-    #result {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 10px;
-      background: #241637;
-      overflow-wrap: anywhere;
-    }
+.welcome h1 {
+  margin-top: 0;
+  font-size: 28px;
+}
 
-    #code {
-      display: block;
-      color: #d4a2ff;
-      font-size: 25px;
-      font-weight: bold;
-      letter-spacing: 3px;
-      margin: 12px 0;
-    }
+.welcome p {
+  color: #d5c5e6;
+  line-height: 1.6;
+}
 
-    .hidden { display: none; }
-    small { color: #9e91ac; }
-  </style>
+.section-title {
+  color: #c58aff;
+  margin: 28px 0 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+}
+
+.card {
+  background: #160f22;
+  border: 1px solid #39234f;
+  border-radius: 16px;
+  padding: 22px;
+}
+
+.card .emoji {
+  font-size: 30px;
+}
+
+.card h3 {
+  margin-bottom: 8px;
+}
+
+.card p {
+  color: #b9adc7;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+button {
+  border: 0;
+  border-radius: 9px;
+  padding: 13px 17px;
+  background: #8738c5;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.notice {
+  margin-top: 22px;
+  padding: 17px;
+  background: #21172d;
+  border-left: 4px solid #b16aff;
+  border-radius: 9px;
+  color: #d6c8e5;
+  line-height: 1.6;
+}
+
+footer {
+  text-align: center;
+  color: #82758f;
+  padding: 25px;
+  font-size: 12px;
+}
+</style>
 </head>
+
 <body>
-  <main class="card">
-    <div class="logo">VONQUISH MD</div>
-    <p>Connect your WhatsApp account using a secure pairing code.</p>
 
-    <form id="pairForm">
-      <input
-        id="phone"
-        type="tel"
-        placeholder="2547XXXXXXXX"
-        autocomplete="tel"
-        required
-      >
-      <button id="submit" type="submit">GET PAIRING CODE</button>
-    </form>
+<header>
+  <div class="logo">💜 VONQUISH MD</div>
+  <div class="status">● Dashboard</div>
+</header>
 
-    <div id="result" class="hidden" aria-live="polite">
-      <p id="message"></p>
-      <span id="code"></span>
-      <small>Never share your pairing code with anyone.</small>
+<main>
+
+  <section class="welcome">
+    <h1>Welcome to VONQUISH MD</h1>
+    <p>
+      Your WhatsApp bot platform.
+      Explore the dashboard and discover what VONQUISH MD can do.
+    </p>
+  </section>
+
+  <h2 class="section-title">Main Dashboard</h2>
+
+  <section class="grid">
+
+    <div class="card">
+      <div class="emoji">📱</div>
+      <h3>WhatsApp Pairing</h3>
+      <p>
+        Individual WhatsApp connections are being prepared
+        with secure session protection.
+      </p>
+      <button disabled>Coming Soon</button>
     </div>
 
-    <p><small>Only connect a WhatsApp account you own or are authorised to use.</small></p>
-  </main>
+    <div class="card">
+      <div class="emoji">🤖</div>
+      <h3>Bot Features</h3>
+      <p>
+        Discover commands, automatic replies and other
+        bot capabilities.
+      </p>
+      <button onclick="showMessage('Bot features are being prepared.')">
+        Explore
+      </button>
+    </div>
 
-  <script>
-    const form = document.getElementById("pairForm");
-    const button = document.getElementById("submit");
-    const result = document.getElementById("result");
-    const message = document.getElementById("message");
-    const code = document.getElementById("code");
+    <div class="card">
+      <div class="emoji">⚙️</div>
+      <h3>Settings</h3>
+      <p>
+        Platform settings and customization options.
+      </p>
+      <button onclick="showMessage('Settings are coming soon.')">
+        Settings
+      </button>
+    </div>
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+    <div class="card">
+      <div class="emoji">📖</div>
+      <h3>Help & Support</h3>
+      <p>
+        Learn about VONQUISH MD and how to use the platform.
+      </p>
+      <button onclick="showMessage('Help centre is coming soon.')">
+        Get Help
+      </button>
+    </div>
 
-      button.disabled = true;
-      button.textContent = "PLEASE WAIT...";
-      result.classList.remove("hidden");
-      message.textContent = "Requesting pairing code...";
-      code.textContent = "";
+  </section>
 
-      try {
-        const response = await fetch("/api/pair", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            phone: document.getElementById("phone").value
-          })
-        });
+  <div class="notice" id="message">
+    💜 Welcome! VONQUISH MD dashboard is ready.
+  </div>
 
-        const data = await response.json();
+</main>
 
-        if (!response.ok) throw new Error(data.error || "Request failed");
+<footer>
+  VONQUISH MD © 2026 • Built different.
+</footer>
 
-        message.textContent = data.instructions;
-        code.textContent = data.pairingCode;
-      } catch (error) {
-        message.textContent = error.message;
-      } finally {
-        button.disabled = false;
-        button.textContent = "GET PAIRING CODE";
-      }
-    });
-  </script>
+<script>
+function showMessage(text) {
+  document.getElementById("message").textContent = text;
+}
+</script>
+
 </body>
 </html>

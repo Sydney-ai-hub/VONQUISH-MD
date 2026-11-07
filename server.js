@@ -1,108 +1,127 @@
-const express = require("express");
-const {
-  default: makeWASocket,
-  useMultiFileAuthState
-} = require("@whiskeysockets/baileys");
 
+const readline = require("readline");
 const path = require("path");
-const fs = require("fs");
 
-const app = express();
-const PORT = 3000;
+async function startBot() {
+  const baileys = await import("@whiskeysockets/baileys");
 
-app.use(express.json({ limit: "10kb" }));
-app.use(express.static(path.join(__dirname, "public")));
+  const makeWASocket = baileys.default;
+  const { useMultiFileAuthState, DisconnectReason } = baileys;
 
-let pairingInProgress = false;
-let lastRequest = 0;
-let socket = null;
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
 
-app.post("/api/pair", async (req, res) => {
-  if (pairingInProgress) {
-    return res.status(409).json({
-      error: "A pairing request is already running."
-    });
-  }
+  const ask = (question) =>
+    new Promise((resolve) => rl.question(question, resolve));
 
-  const phone = String(req.body.phone || "").replace(/\D/g, "");
+  const { state, saveCreds } = await useMultiFileAuthState(
+    path.join(__dirname, "session")
+  );
 
-  if (!/^\d{10,15}$/.test(phone)) {
-    return res.status(400).json({
-      error: "Enter a valid number with country code."
-    });
-  }
+  const sock = makeWASocket({
+    auth: state,
+    printQRInTerminal: false,
+    markOnlineOnConnect: false
+  });
 
-  if (Date.now() - lastRequest < 60000) {
-    return res.status(429).json({
-      error: "Please wait one minute before trying again."
-    });
-  }
+  sock.ev.on("creds.update", saveCreds);
 
-  pairingInProgress = true;
-  lastRequest = Date.now();
+  if (!state.creds.registered) {
+    const number = (await ask(
+      "Enter your WhatsApp number with country code (digits only): "
+    )).replace(/\D/g, "");
 
-  try {
-    const sessionPath = path.join(
-      __dirname,
-      "sessions",
-      "local-test"
-    );
-
-    fs.mkdirSync(sessionPath, { recursive: true });
-
-    const { state, saveCreds } =
-      await useMultiFileAuthState(sessionPath);
-
-    if (state.creds.registered) {
-      return res.status(409).json({
-        error: "A WhatsApp account is already linked to this test server."
-      });
+    if (!number || number.length < 10) {
+      console.log("Invalid phone number. Restart and try again.");
+      rl.close();
+      return;
     }
 
-    socket = makeWASocket({ auth: state });
-
-    socket.ev.on("creds.update", saveCreds);
-
-    socket.ev.on("connection.update", ({ connection }) => {
-      if (connection === "open") {
-        console.log("💜 VONQUISH MD connected!");
-      }
-
-      if (connection === "close") {
-        console.log("WhatsApp connection closed.");
-        socket = null;
-      }
-    });
-
-    const code = await socket.requestPairingCode(phone);
-
-    res.json({
-      success: true,
-      pairingCode: code,
-      instructions:
-        "Open WhatsApp > Linked Devices > Link a Device > Link with phone number instead."
-    });
-
-  } catch (error) {
-    console.error("Pairing error:", error.message);
-
-    res.status(500).json({
-      error: "Could not generate a pairing code. Please try again."
-    });
-
-  } finally {
-    pairingInProgress = false;
+    try {
+      const code = await sock.requestPairingCode(number);
+      console.log("\n================================");
+      console.log("YOUR VONQUISH MD PAIRING CODE:");
+      console.log(code);
+      console.log("================================\n");
+      console.log("Open WhatsApp > Linked Devices > Link a Device > Link with phone number.");
+      console.log("Enter the pairing code shown above.");
+    } catch (error) {
+      console.log("Could not generate pairing code:", error.message);
+    }
+  } else {
+    console.log("Saved WhatsApp session found. Reconnecting...");
   }
-});
 
-app.get("/health", (req, res) => {
-  res.json({
-    status: "VONQUISH MD is running"
+  rl.close();
+
+  sock.ev.on("connection.update", ({ connection, lastDisconnect }) => {
+    if (connection === "open") {
+      console.log("💜 VONQUISH MD connected to WhatsApp!");
+    }
+
+    if (connection === "close") {
+      const status = lastDisconnect?.error?.output?.statusCode;
+
+      if (status === DisconnectReason.loggedOut) {
+        console.log("WhatsApp logged out. Pair again to reconnect.");
+      } else {
+        console.log("Connection closed. Restart the bot to reconnect.");
+      }
+    }
   });
-});
 
-app.listen(PORT, "127.0.0.1", () => {
-  console.log(
-    `💜 VONQUISH MD website: http://localhost:${PORT}`
-  );
+  sock.ev.on("messages.upsert", async ({ messages, type }) => {
+    if (type !== "notify") return;
+
+    for (const message of messages) {
+      if (!message.message || message.key.fromMe) continue;
+
+      const jid = message.key.remoteJid;
+      if (!jid || jid === "status@broadcast") continue;
+
+      const text =
+        message.message.conversation ||
+        message.message.extendedTextMessage?.text ||
+        "";
+
+      const command = text.trim().toLowerCase();
+
+      try {
+        if (command === ".menu" || command === ".help") {
+          await sock.sendMessage(jid, {
+            text:
+              "💜 VONQUISH MD MENU\n\n" +
+              ".menu - Show commands\n" +
+              ".alive - Check bot status\n" +
+              ".ping - Check response\n" +
+              ".owner - Owner information"
+          });
+        } else if (command === ".alive") {
+          await sock.sendMessage(jid, {
+            text: "💜 VONQUISH MD is alive and running!"
+          });
+        } else if (command === ".ping") {
+          await sock.sendMessage(jid, {
+            text: "🏓 Pong! VONQUISH MD is responding."
+          });
+        } else if (command === ".owner") {
+          await sock.sendMessage(jid, {
+            text: "💜 VONQUISH MD owner."
+          });
+        } else if (["hi", "hello", "hey"].includes(command)) {
+          await sock.sendMessage(jid, {
+            text: "Hey! 💜 VONQUISH MD is here. Type .menu to see commands."
+          });
+        }
+      } catch (error) {
+        console.log("Message error:", error.message);
+      }
+    }
+  });
+}
+
+startBot().catch((error) => {
+  console.error("Bot startup error:", error);
 });
