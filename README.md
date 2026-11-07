@@ -7,33 +7,49 @@
 
 VONQUISH MD is a WhatsApp automation project built with Node.js and Baileys.
 
-Designed for a clean, simple and command-based experience.
+A simple, command-based WhatsApp bot designed for a clean experience.
+
+## 🚀 Quick Links
+
+- 📱 [How to Get a WhatsApp Pairing Code](PAIRING.md)
+- ☁️ [How to Deploy VONQUISH MD](DEPLOYMENT.md)
+- 💻 [Installation Guide](#installation)
+- 📋 [Bot Commands](#commands)
+- 👑 [Contact Developer](#developer)
 
 ## ✨ Features
 
-- 🔐 Pairing-code connection (experimental)
+- 🔐 WhatsApp pairing-code connection (experimental)
 - 🤖 Command-based bot
 - 💜 No automatic greeting replies
-- 📋 `.menu` – Display bot commands
-- ⚡ `.alive` – Check bot status
-- 🏓 `.ping` – Test bot response
-- 👑 `.owner` – Owner information
+- ⚡ Fast command responses
 - 💾 Local session storage
+
+## 📋 Commands
+
+| Command | Description |
+|---|---|
+| `.menu` | Display bot commands |
+| `.help` | Show help information |
+| `.alive` | Check bot status |
+| `.ping` | Test bot response |
+| `.owner` | Contact the developer |
 
 ## 🛠️ Technologies
 
 - Node.js
 - JavaScript
 - Baileys
-- WhatsApp Web connection
+- Express
+- Supabase
 
-## 🚀 Installation
+## 💻 Installation
 
-1. Clone this repository:
+1. Clone the repository:
 
    `git clone https://github.com/Sydney-ai-hub/VONQUISH-MD.git`
 
-2. Enter the project folder:
+2. Open the project folder:
 
    `cd VONQUISH-MD`
 
@@ -41,11 +57,19 @@ Designed for a clean, simple and command-based experience.
 
    `npm install`
 
-4. Start the bot:
+4. Start the local bot:
 
    `node index.js`
 
-5. Follow the pairing instructions.
+5. Follow the pairing instructions in your terminal.
+
+## ☁️ Deployment
+
+Want to run VONQUISH MD online?
+
+Read our [Deployment Guide](DEPLOYMENT.md).
+
+Deployment is not yet fully configured. Follow the guide and check that your hosting setup supports persistent WhatsApp sessions.
 
 ## ⚠️ Disclaimer
 
@@ -53,7 +77,9 @@ VONQUISH MD is an independent, unofficial project and is not affiliated with Wha
 
 Pairing is experimental and may not work reliably yet.
 
-Use responsibly and only connect accounts you own or have permission to use.
+Only connect WhatsApp accounts you own or have permission to use.
+
+Never share your pairing code or session credentials.
 
 ## 💜 Developer
 
