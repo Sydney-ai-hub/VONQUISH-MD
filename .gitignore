@@ -1,6 +1,9 @@
+
 node_modules/
 session/
 sessions/
+session_failed/
+session_old/
 .env
 .env.*
 *.log
